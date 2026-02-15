@@ -1,7 +1,7 @@
-user_token: вставьте_ваш_токен_вместо_этой_строки
+user_token: YTkyMmNiNTktN2ZjNS00ZTRmLWI2MTMtOGRhOGNiMTU4ODVkXzgwOTI=
 
 session:
-  key: key_to_generate
+  key: 12345678901234567890123456789012
 admin:
   email: admin@admin.com
   password: admin

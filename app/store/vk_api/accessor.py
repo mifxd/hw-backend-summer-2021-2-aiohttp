@@ -23,14 +23,13 @@ class VkApiAccessor(BaseAccessor):
         self.ts: int | None = None
 
     async def connect(self, app: "Application"):
-        # TODO: добавить создание aiohttp ClientSession,
-        #  получить данные о long poll сервере с помощью метода groups.getLongPollServer
-        #  вызвать метод start у Poller
-        raise NotImplementedError
+        self.session = ClientSession()
+        print("VK API Accessor connected")
 
     async def disconnect(self, app: "Application"):
-        # TODO: закрыть сессию и завершить поллер
-        raise NotImplementedError
+        if self.session:
+            await self.session.close()
+        print("VK API Accessor disconnected")
 
     @staticmethod
     def _build_query(host: str, method: str, params: dict) -> str:

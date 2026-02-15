@@ -4,6 +4,9 @@ from aiohttp.web import (
     View as AiohttpView,
 )
 
+from aiohttp_session import setup as setup_session
+from aiohttp_session.cookie_storage import EncryptedCookieStorage
+
 from app.admin.models import Admin
 from app.store import Store, setup_store
 from app.store.database.database import Database
@@ -24,7 +27,7 @@ class Request(AiohttpRequest):
 
     @property
     def app(self) -> Application:
-        return super().app()
+        return super().app
 
 
 class View(AiohttpView):
@@ -40,14 +43,25 @@ class View(AiohttpView):
     def data(self) -> dict:
         return self.request.get("data", {})
 
-
-app = Application()
-
-
 def setup_app(config_path: str) -> Application:
+    app = Application()
     setup_logging(app)
     setup_config(app, config_path)
-    setup_routes(app)
+
+    session_cfg = app.config.session
+    if session_cfg is not None and hasattr(session_cfg, 'key'):
+        raw_key = session_cfg.key
+    else:
+        raw_key = "key_to_generate"
+
+    try:
+        session_key = raw_key.encode().ljust(32)[:32]
+        setup_session(app, EncryptedCookieStorage(session_key))
+    except Exception:
+        setup_session(app, EncryptedCookieStorage(b"a" * 32))
+
     setup_middlewares(app)
+    setup_routes(app)
     setup_store(app)
+
     return app
